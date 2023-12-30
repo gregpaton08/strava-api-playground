@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D3 Line Chart with Tooltip</title>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <style>
+    /* Add some styles for the tooltip */
+    .tooltip {
+      position: absolute;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Create a container for the chart -->
+<div id="chart-container"></div>
+
+<!-- Create a tooltip element -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  // Sample data (timestamp and scalar value pairs)
+  const data = [
+    { timestamp: 1632931200000, value: 20 },
+    { timestamp: 1633017600000, value: 35 },
+    { timestamp: 1633104000000, value: 10 },
+    // Add more data as needed
+  ];
+
+  // Set up the dimensions for the chart
+  const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+  const width = 600 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
+
+  // Parse the timestamp values
+  const parseTime = d3.timeParse('%Q');
+  data.forEach(d => {
+    d.timestamp = parseTime(d.timestamp);
+  });
+
+  // Create scales and axis
+  const xScale = d3.scaleTime().range([0, width]);
+  const yScale = d3.scaleLinear().range([height, 0]);
+
+  const xAxis = d3.axisBottom(xScale);
+  const yAxis = d3.axisLeft(yScale);
+
+  // Create the line function
+  const line = d3.line()
+    .x(d => xScale(d.timestamp))
+    .y(d => yScale(d.value));
+
+  // Create the SVG container
+  const svg = d3.select('#chart-container')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Set the domains for the scales
+  xScale.domain(d3.extent(data, d => d.timestamp));
+  yScale.domain([0, d3.max(data, d => d.value)]);
+
+  // Draw the x axis
+  svg.append('g')
+    .attr('transform', `translate(0, ${height})`)
+    .call(xAxis);
+
+  // Draw the y axis
+  svg.append('g')
+    .call(yAxis);
+
+  // Draw the line
+  svg.append('path')
+    .datum(data) // Use datum instead of data for a single data set
+    .attr('class', 'line')
+    .attr('fill', 'none') // Set fill to none to avoid filling the area
+    .attr('stroke', 'steelblue') // Set the line color
+    .attr('stroke-width', 2) // Set the line width
+    .attr('d', line);
+
+  // Add a circle for each data point
+  svg.selectAll('circle')
+    .data(data)
+    .enter().append('circle')
+    .attr('cx', d => xScale(d.timestamp))
+    .attr('cy', d => yScale(d.value))
+    .attr('r', 5)
+    .on('mouseover', d => {
+      // Show the tooltip on mouseover
+      d3.select('#tooltip')
+        .style('display', 'block')
+        .html(`<strong>Date:</strong> ${d.timestamp.toLocaleString()}<br><strong>Value:</strong> ${d.value}`)
+        .style('left', `${d3.event.pageX}px`)
+        .style('top', `${d3.event.pageY - 28}px`);
+    })
+    .on('mouseout', () => {
+      // Hide the tooltip on mouseout
+      d3.select('#tooltip').style('display', 'none');
+    });
+
+</script>
+</body>
+</html>
