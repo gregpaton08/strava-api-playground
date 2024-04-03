@@ -26,85 +26,182 @@
 
 <script>
   // Sample data (timestamp and scalar value pairs)
-  const data = [
-    { timestamp: 1632931200000, value: 20 },
-    { timestamp: 1633017600000, value: 35 },
-    { timestamp: 1633104000000, value: 10 },
-    // Add more data as needed
-  ];
+  // const data = [
+  //   // { timestamp: "2023-12-29T15:47:51Z", value: 20 },
+  //   // { timestamp: "2023-12-30T15:47:51Z", value: 35 },
+  //   // { timestamp: "2023-12-31T15:47:51Z", value: 10 },
 
-  // Set up the dimensions for the chart
-  const margin = { top: 20, right: 20, bottom: 30, left: 50 };
-  const width = 600 - margin.left - margin.right;
-  const height = 400 - margin.top - margin.bottom;
+  //   {
+  //     "timestamp": "2022-05-08T17:11:12Z",
+  //     "value": 14557.5
+  //   },
+  //   {
+  //     "timestamp": "2022-05-09T05:56:57Z",
+  //     "value": 13593.7
+  //   },
+  //   {
+  //     "timestamp": "2022-05-10T05:45:40Z",
+  //     "value": 20389.7
+  //   },
+  //   {
+  //     "timestamp": "2022-05-11T05:56:43Z",
+  //     "value": 19282.5
+  //   }
 
-  // Parse the timestamp values
-  const parseTime = d3.timeParse('%Q');
-  data.forEach(d => {
-    d.timestamp = parseTime(d.timestamp);
-  });
 
-  // Create scales and axis
-  const xScale = d3.scaleTime().range([0, width]);
-  const yScale = d3.scaleLinear().range([height, 0]);
+  //   // Add more data as needed
+  // ];
 
-  const xAxis = d3.axisBottom(xScale);
-  const yAxis = d3.axisLeft(yScale);
+  function createBurndownChart(data, year, goalValue) {
+    // The goal.
+    const goal = [
+      {
+        "timestamp": year + "-01-01T00:00:00Z",
+        "value": 0.0
+      },
+      {
+        "timestamp": year + "-12-31T11:59:59Z",
+        "value": goalValue,
+      }
+    ];
 
-  // Create the line function
-  const line = d3.line()
-    .x(d => xScale(d.timestamp))
-    .y(d => yScale(d.value));
+    console.warn(goal);
 
-  // Create the SVG container
-  const svg = d3.select('#chart-container')
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
+    // Set up the dimensions for the chart
+    const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+    const width = 1200 - margin.left - margin.right;
+    const height = 800 - margin.top - margin.bottom;
 
-  // Set the domains for the scales
-  xScale.domain(d3.extent(data, d => d.timestamp));
-  yScale.domain([0, d3.max(data, d => d.value)]);
-
-  // Draw the x axis
-  svg.append('g')
-    .attr('transform', `translate(0, ${height})`)
-    .call(xAxis);
-
-  // Draw the y axis
-  svg.append('g')
-    .call(yAxis);
-
-  // Draw the line
-  svg.append('path')
-    .datum(data) // Use datum instead of data for a single data set
-    .attr('class', 'line')
-    .attr('fill', 'none') // Set fill to none to avoid filling the area
-    .attr('stroke', 'steelblue') // Set the line color
-    .attr('stroke-width', 2) // Set the line width
-    .attr('d', line);
-
-  // Add a circle for each data point
-  svg.selectAll('circle')
-    .data(data)
-    .enter().append('circle')
-    .attr('cx', d => xScale(d.timestamp))
-    .attr('cy', d => yScale(d.value))
-    .attr('r', 5)
-    .on('mouseover', d => {
-      // Show the tooltip on mouseover
-      d3.select('#tooltip')
-        .style('display', 'block')
-        .html(`<strong>Date:</strong> ${d.timestamp.toLocaleString()}<br><strong>Value:</strong> ${d.value}`)
-        .style('left', `${d3.event.pageX}px`)
-        .style('top', `${d3.event.pageY - 28}px`);
-    })
-    .on('mouseout', () => {
-      // Hide the tooltip on mouseout
-      d3.select('#tooltip').style('display', 'none');
+    // Parse the timestamp values
+    const formatString = '%Y-%m-%dT%H:%M:%SZ';
+    const parseTime = d3.timeParse(formatString);
+    function metersToMiles(meters) {
+      const metersInOneMile = 1609.34;
+      return meters / metersInOneMile;
+    }
+    data.forEach(d => {
+      d.timestamp = parseTime(d.timestamp);
+      d.value = metersToMiles(d.value);
     });
+    goal.forEach(d => {
+      d.timestamp = parseTime(d.timestamp);
+      // d.value = metersToMiles(d.value);
+    });
+
+    // Update the data so each value is a sum of itself and all previous values.
+    for (let i = 1; i < data.length; i++) {
+      data[i].value += data[i-1].value;
+    }
+
+    // Create scales and axis
+    const xScale = d3.scaleTime().range([0, width]);
+    const yScale = d3.scaleLinear().range([height, 0]);
+
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+
+    // Create the line function
+    const line = d3.line()
+      .x(d => xScale(d.timestamp))
+      .y(d => yScale(d.value));
+
+    // Create the SVG container
+    const svg = d3.select('#chart-container')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+
+    const allData = [...data, ...goal];
+
+    // Set the domains for the scales
+    xScale.domain(d3.extent(allData, d => d.timestamp));
+    yScale.domain([0, d3.max(allData, d => d.value)]);
+
+    // Draw the x axis
+    svg.append('g')
+      .attr('transform', `translate(0, ${height})`)
+      .call(xAxis);
+
+    // Draw the y axis
+    svg.append('g')
+      .call(yAxis);
+
+    // Draw the line
+    svg.append('path')
+      .datum(data) // Use datum instead of data for a single data set
+      .attr('class', 'line')
+      .attr('fill', 'none') // Set fill to none to avoid filling the area
+      .attr('stroke', 'steelblue') // Set the line color
+      .attr('stroke-width', 2) // Set the line width
+      .attr('d', line);
+
+    svg.append('path')
+      .datum(goal)
+      .attr('class', 'line')
+      .attr('fill', 'none')
+      .attr('stroke', 'orange')
+      .attr('stroke-width', 2)
+      .attr('d', line);
+
+    // Add a circle for each data point
+    svg.selectAll('circle')
+      .data([...data, ...goal])
+      .enter().append('circle')
+      .attr('cx', d => xScale(d.timestamp))
+      .attr('cy', d => yScale(d.value))
+      .attr('r', 3)
+      .on('mouseover', d => {
+        // Show the tooltip on mouseover
+        d3.select('#tooltip')
+          .style('display', 'block')
+          .html(`<strong>Date:</strong> ${d.timestamp.toLocaleString()}<br><strong>Value:</strong> ${d.value}`)
+          .style('left', `${d3.event.pageX}px`)
+          .style('top', `${d3.event.pageY - 28}px`);
+        
+        // Add the vertical line
+        svg.append('line')
+          .attr('class', 'vertical-line')
+          .attr('x1', xScale(d.timestamp))
+          .attr('y1', yScale(d.value))
+          .attr('x2', xScale(d.timestamp))
+          .attr('y2', height)
+          .attr('stroke', 'red')
+          .attr('stroke-width', 1)
+          .attr('stroke-dasharray', '3 3'); // Optional: Add a dash pattern
+      })
+      .on('mouseout', () => {
+        // Hide the tooltip on mouseout
+        d3.select('#tooltip').style('display', 'none');
+        svg.select('.vertical-line').remove();
+      });
+  }
+
+  // createBurndownChart(data);
+
+  fetch('activities/run_2023.json')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(d => {
+        d.timestamp = d.start_date_local
+        d.value = d.distance
+      });
+      createBurndownChart(data, 2023, 1000);
+    })
+    .catch(error => console.error('Error loading JSON:', error));
+
+  fetch('activities/ride_2024.json')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(d => {
+        d.timestamp = d.start_date_local
+        d.value = d.distance
+      });
+      createBurndownChart(data, 2024, 4000);
+    })
+    .catch(error => console.error('Error loading JSON:', error));
 
 </script>
 </body>
