@@ -3,3 +3,5 @@ token.txt
 client_id
 client_secret
 authorization_code
+*_token
+*_key

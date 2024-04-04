@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TOKEN=$(cat token.txt)
+TOKEN=$(cat access_token)
 
 
 # TOKEN="194aac5607ea12f8b50fbdd513c15b0cd00309ec"
