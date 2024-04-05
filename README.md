@@ -8,7 +8,7 @@ https://developers.strava.com/docs/getting-started/
 http://www.strava.com/oauth/authorize?client_id=99749542&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read
 
 
-Get your client ID from the [Strava API settings](https://www.strava.com/settings/api) and store it in a file named `client_id`.
+Get your client ID and secret from the [Strava API settings](https://www.strava.com/settings/api) and store it in a file named `client_id` and `client_secret`.
 
 ```
 client_id=$(cat client_id)
@@ -65,7 +65,7 @@ curl -X POST https://www.strava.com/api/v3/oauth/token \
   -d client_id=$(cat client_id) \
   -d client_secret=$(cat client_secret) \
   -d grant_type=refresh_token \
-  -d refresh_token=REFRESH_TOKEN
+  -d refresh_token=$(cat refresh_token)
 ```
 
 ## Test Server

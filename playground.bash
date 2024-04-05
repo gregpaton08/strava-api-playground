@@ -3,9 +3,6 @@
 TOKEN=$(cat access_token)
 
 
-# TOKEN="194aac5607ea12f8b50fbdd513c15b0cd00309ec"
-
-
 # http 
 # curl -X GET "https://www.strava.com/api/v3/athlete" -H "Authorization: Bearer $TOKEN" > athlete.json
 
