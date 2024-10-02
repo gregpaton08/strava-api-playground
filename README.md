@@ -2,6 +2,8 @@
 
 ## Setting up tokens and stuff
 
+https://developers.strava.com/docs/reference/
+
 https://developers.strava.com/docs/getting-started/
 
 
@@ -91,3 +93,7 @@ a|srFdggiMZt@DTLL^NPRNB@DHA`@LVHPPXHL@XIl@@^GtAYp@IPINFTA|AQ@?|@QR@j@GFCAMFGNK`@
 https://maps.googleapis.com/maps/api/staticmap?size=600x300&maptype=roadmap&path=enc:a|srFdggiMZt@DTLL^NPRNB@DHA`@LVHPPXHL@XIl@@^GtAYp@IPINFTA|AQ@?|@QR@j@GFCAMFGNK`@ORMLKFMz@q@TKHQCSFDEBD?I_@AyAGYCY@YY`@@AQCGEc@Og@]Yc@_A{CCUG[KWs@c@QUQKSG[Si@QWB&key=GIVE_YOUR_API_KEY
 
 May need to update API restrictions [here](https://console.cloud.google.com/google/maps-apis/credentials) when your IP address changes.
+
+# To Do
+
+* Setup small server (on NUC?) to handle webhooks

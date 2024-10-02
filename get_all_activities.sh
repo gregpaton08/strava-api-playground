@@ -16,7 +16,7 @@ ACTIVITIES_DIR="activities"
 mkdir -p $ACTIVITIES_DIR
 while [[ "$RESULT_LENGTH" == "$PER_PAGE" ]]; do
     OUTPUT_FILE="$ACTIVITIES_DIR/activities_$PAGE.json"
-    curl -X GET "https://www.strava.com/api/v3/athlete/activities?page=$PAGE&per_page=$PER_PAGE"  -H "Authorization: Bearer $TOKEN" > $OUTPUT_FILE
+    curl -X GET "https://www.strava.com/api/v3/athlete/activities?page=$PAGE&per_page=$PER_PAGE" -H "Authorization: Bearer $TOKEN" > $OUTPUT_FILE
 
     RESULT_LENGTH=$(jq 'length' $OUTPUT_FILE)
 
