@@ -9,6 +9,9 @@ fi
 
 TOKEN=$(cat access_token)
 
+# TODO: filter out walks? Does not appear to be possible...
+#       Could also just use webhooks, but need to setup a service for that
+
 PER_PAGE=100
 RESULT_LENGTH=$PER_PAGE
 PAGE=1
