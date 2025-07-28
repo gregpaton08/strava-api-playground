@@ -1,5 +1,13 @@
 # strava-api-playground
 
+## tl;dr
+
+```bash
+./refresh.sh # hopefully this just works, otherwise setup your tokens and stuff
+./get_all_activities.sh
+./read_ride.sh
+```
+
 ## Setting up tokens and stuff
 
 https://developers.strava.com/docs/reference/

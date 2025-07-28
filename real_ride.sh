@@ -13,6 +13,7 @@ jq '.[] | select(.type == "Ride" and .trainer == false and .gear_id != "'"${SPEC
 jq 'map(select(.start_date_local | startswith("2022")))' activities/ride_lifetime.json > activities/ride_2022.json
 jq 'map(select(.start_date_local | startswith("2023")))' activities/ride_lifetime.json > activities/ride_2023.json
 jq 'map(select(.start_date_local | startswith("2024")))' activities/ride_lifetime.json > activities/ride_2024.json
+jq 'map(select(.start_date_local | startswith("2025")))' activities/ride_lifetime.json > activities/ride_2025.json
 
 METERS_IN_MILE=1609.34
 meters_ridden=$(jq 'map(.distance) | add' activities/ride_2022.json)
@@ -26,6 +27,10 @@ printf "2023 miles = %.2f\n" ${MILES_RIDDEN}
 meters_ridden=$(jq 'map(.distance) | add' activities/ride_2024.json)
 MILES_RIDDEN=$(echo "$meters_ridden / $METERS_IN_MILE" | bc -l)
 printf "2024 miles = %.2f\n" ${MILES_RIDDEN}
+
+meters_ridden=$(jq 'map(.distance) | add' activities/ride_2025.json)
+MILES_RIDDEN=$(echo "$meters_ridden / $METERS_IN_MILE" | bc -l)
+printf "2025 miles = %.2f\n" ${MILES_RIDDEN}
 
 meters_ridden=$(jq 'map(.distance) | add' activities/ride_lifetime.json)
 MILES_RIDDEN=$(echo "${meters_ridden} / ${METERS_IN_MILE}" | bc -l)
