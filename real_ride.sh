@@ -2,6 +2,8 @@
 
 set -Eeuo pipefail
 
+echo "bike"
+
 KICKR_CANNON_ID="b13729442"
 SPECIALIZED_ON_KICKR_ID="b11645909"
 
