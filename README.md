@@ -104,4 +104,7 @@ May need to update API restrictions [here](https://console.cloud.google.com/goog
 
 # To Do
 
-* Setup small server (on NUC?) to handle webhooks
+* Setup small server (on NUC?) to handle webhooks.
+* Build out a single binary web app with Rust and Svelte.
+* Show miles per week histogram.
+* Think of and prioritize data viz ideas.
